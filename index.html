@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ビジネス書ランダム要約</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📚 ビジネス書ランダム要約</h1>
+      <p class="subtitle">クリックするたびに新しいビジネス書の知恵を</p>
+    </header>
+
+    <div class="card" id="book-card">
+      <div class="card-header">
+        <span class="category" id="book-category"></span>
+        <span class="year" id="book-year"></span>
+      </div>
+      <h2 class="book-title" id="book-title"></h2>
+      <p class="book-author" id="book-author"></p>
+      <div class="divider"></div>
+      <h3 class="section-label">概要</h3>
+      <p class="summary" id="book-summary"></p>
+      <h3 class="section-label">主なポイント</h3>
+      <ul class="points" id="book-points"></ul>
+      <h3 class="section-label">この本から学べること</h3>
+      <p class="takeaway" id="book-takeaway"></p>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" id="random-btn" onclick="showRandom()">
+        ランダムで表示
+      </button>
+      <p class="counter" id="counter"></p>
+    </div>
+  </div>
+
+  <script src="books.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
