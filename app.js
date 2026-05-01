@@ -1,5 +1,4 @@
 let currentIndex = -1;
-let viewedCount = 0;
 
 function getRandomIndex() {
   if (books.length === 1) return 0;
@@ -12,7 +11,6 @@ function getRandomIndex() {
 
 function showRandom() {
   currentIndex = getRandomIndex();
-  viewedCount++;
 
   const book = books[currentIndex];
   const card = document.getElementById("book-card");
@@ -37,7 +35,7 @@ function showRandom() {
   });
 
   document.getElementById("counter").textContent =
-    `これまでに ${viewedCount} 冊表示しました（全 ${books.length} 冊）`;
+    `全 ${books.length} 冊収録`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
