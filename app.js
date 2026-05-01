@@ -38,9 +38,8 @@ function displayBook(idx) {
     pointsList.appendChild(li);
   });
 
-  document.getElementById('counter').textContent = '全 ' + books.length + ' 冊収録';
   document.getElementById('btn-prev').disabled = (histPos === 0);
-  document.getElementById('btn-next').style.display = (histPos < viewHistory.length - 1) ? '' : 'none';
+  document.getElementById('btn-next').style.visibility = (histPos < viewHistory.length - 1) ? 'visible' : 'hidden';
 }
 
 function showRandom() {
@@ -250,5 +249,6 @@ function revealAnswer() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('header-count').textContent = books.length + '冊';
   showRandom();
 });
