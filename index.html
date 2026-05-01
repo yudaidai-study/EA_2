@@ -12,27 +12,52 @@
       <h1>📚 書籍要約</h1>
     </header>
 
-    <div class="card" id="book-card">
-      <div class="card-header">
-        <span class="category" id="book-category"></span>
-        <span class="year" id="book-year"></span>
-      </div>
-      <h2 class="book-title" id="book-title"></h2>
-      <p class="book-author" id="book-author"></p>
-      <div class="divider"></div>
-      <h3 class="section-label">概要</h3>
-      <p class="summary" id="book-summary"></p>
-      <h3 class="section-label">主なポイント</h3>
-      <ul class="points" id="book-points"></ul>
-      <h3 class="section-label">この本から学べること</h3>
-      <p class="takeaway" id="book-takeaway"></p>
+    <div class="mode-tabs">
+      <button class="tab-btn active" id="tab-random" onclick="switchMode('random')">ランダム</button>
+      <button class="tab-btn" id="tab-list" onclick="switchMode('list')">一覧</button>
+      <button class="tab-btn" id="tab-quiz" onclick="switchMode('quiz')">クイズ</button>
     </div>
 
-    <div class="controls">
-      <button class="btn btn-primary" id="random-btn" onclick="showRandom()">
-        ランダムで表示
-      </button>
-      <p class="counter" id="counter"></p>
+    <!-- ランダムモード -->
+    <div id="mode-random">
+      <div class="card" id="book-card">
+        <div class="card-header">
+          <span class="category" id="book-category"></span>
+          <span class="year" id="book-year"></span>
+        </div>
+        <h2 class="book-title" id="book-title"></h2>
+        <p class="book-author" id="book-author"></p>
+        <div class="divider"></div>
+        <h3 class="section-label">概要</h3>
+        <p class="summary" id="book-summary"></p>
+        <h3 class="section-label">主なポイント</h3>
+        <ul class="points" id="book-points"></ul>
+        <h3 class="section-label">この本から学べること</h3>
+        <p class="takeaway" id="book-takeaway"></p>
+      </div>
+      <div class="controls">
+        <button class="btn btn-primary" onclick="showRandom()">ランダムで表示</button>
+        <p class="counter" id="counter"></p>
+      </div>
+    </div>
+
+    <!-- 一覧モード -->
+    <div id="mode-list" class="hidden">
+      <p class="counter" id="list-counter"></p>
+      <div id="book-list"></div>
+    </div>
+
+    <!-- クイズモード -->
+    <div id="mode-quiz" class="hidden">
+      <div class="quiz-header">
+        <span class="quiz-score" id="quiz-score"></span>
+      </div>
+      <div class="card">
+        <p class="quiz-question" id="quiz-question"></p>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback hidden" id="quiz-feedback"></div>
+        <button class="btn btn-primary quiz-next hidden" id="quiz-next" onclick="nextQuestion()">次の問題へ</button>
+      </div>
     </div>
   </div>
 
