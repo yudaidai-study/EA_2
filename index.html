@@ -42,21 +42,24 @@
     </div>
 
     <!-- 一覧モード -->
-    <div id="mode-list" class="hidden">
+    <div id="mode-list" style="display:none">
       <p class="counter" id="list-counter"></p>
       <div id="book-list"></div>
     </div>
 
     <!-- クイズモード -->
-    <div id="mode-quiz" class="hidden">
+    <div id="mode-quiz" style="display:none">
       <div class="quiz-header">
         <span class="quiz-score" id="quiz-score"></span>
       </div>
       <div class="card">
         <p class="quiz-question" id="quiz-question"></p>
-        <div class="quiz-options" id="quiz-options"></div>
-        <div class="quiz-feedback hidden" id="quiz-feedback"></div>
-        <button class="btn btn-primary quiz-next hidden" id="quiz-next" onclick="nextQuestion()">次の問題へ</button>
+        <div class="quiz-input-area">
+          <input type="text" id="quiz-input" class="quiz-input" placeholder="答えを入力…" autocomplete="off" />
+          <button class="btn btn-primary" id="quiz-submit" onclick="submitAnswer()">確認</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback" style="display:none"></div>
+        <button class="btn btn-primary quiz-next" id="quiz-next" style="display:none" onclick="nextQuestion()">次の問題へ</button>
       </div>
     </div>
   </div>
