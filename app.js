@@ -1,35 +1,28 @@
-let currentIndex = -1;
+let viewHistory = [];
+let histPos = -1;
 let currentQuestion = null;
-let quizScore = { correct: 0, total: 0 };
 
 // ---- モード切替 ----
 
 function switchMode(mode) {
-  ['random', 'list', 'quiz'].forEach(m => {
+  ['random', 'list', 'quiz'].forEach(function(m) {
     document.getElementById('mode-' + m).style.display = (m === mode) ? '' : 'none';
     document.getElementById('tab-' + m).classList.toggle('active', m === mode);
   });
   if (mode === 'list') renderList();
-  if (mode === 'quiz') startQuiz();
+  if (mode === 'quiz') nextQuestion();
 }
 
 // ---- ランダムモード ----
 
-function getRandomIndex() {
-  if (books.length === 1) return 0;
-  let next;
-  do { next = Math.floor(Math.random() * books.length); } while (next === currentIndex);
-  return next;
-}
-
-function showRandom() {
-  currentIndex = getRandomIndex();
-  const book = books[currentIndex];
+function displayBook(idx) {
+  const book = books[idx];
   const card = document.getElementById('book-card');
   card.classList.remove('fade-in');
   void card.offsetWidth;
   card.classList.add('fade-in');
 
+  document.getElementById('book-number').textContent = 'No.' + (idx + 1);
   document.getElementById('book-title').textContent = book.title;
   document.getElementById('book-author').textContent = '著者: ' + book.author;
   document.getElementById('book-year').textContent = book.year + '年';
@@ -46,6 +39,33 @@ function showRandom() {
   });
 
   document.getElementById('counter').textContent = '全 ' + books.length + ' 冊収録';
+  document.getElementById('btn-prev').disabled = (histPos === 0);
+  document.getElementById('btn-next').style.display = (histPos < viewHistory.length - 1) ? '' : 'none';
+}
+
+function showRandom() {
+  // 前進履歴を切り捨ててから新しい書籍を追加
+  viewHistory = viewHistory.slice(0, histPos + 1);
+  const last = viewHistory.length > 0 ? viewHistory[viewHistory.length - 1] : -1;
+  let next;
+  do { next = Math.floor(Math.random() * books.length); } while (next === last && books.length > 1);
+  viewHistory.push(next);
+  histPos = viewHistory.length - 1;
+  displayBook(next);
+}
+
+function goPrev() {
+  if (histPos > 0) {
+    histPos--;
+    displayBook(viewHistory[histPos]);
+  }
+}
+
+function goNext() {
+  if (histPos < viewHistory.length - 1) {
+    histPos++;
+    displayBook(viewHistory[histPos]);
+  }
 }
 
 // ---- 一覧モード ----
@@ -65,6 +85,10 @@ function renderList() {
     const info = document.createElement('div');
     info.className = 'list-item-info';
 
+    const num = document.createElement('span');
+    num.className = 'list-item-num';
+    num.textContent = 'No.' + (index + 1);
+
     const cat = document.createElement('span');
     cat.className = 'category';
     cat.textContent = book.category;
@@ -82,6 +106,7 @@ function renderList() {
     arrow.id = 'arrow-' + index;
     arrow.textContent = '▸';
 
+    info.appendChild(num);
     info.appendChild(cat);
     info.appendChild(title);
     info.appendChild(author);
@@ -148,21 +173,6 @@ function toggleListItem(index) {
 
 // ---- クイズモード ----
 
-function startQuiz() {
-  quizScore = { correct: 0, total: 0 };
-  updateQuizScore();
-  nextQuestion();
-}
-
-function updateQuizScore() {
-  const el = document.getElementById('quiz-score');
-  if (quizScore.total === 0) {
-    el.textContent = '全 ' + books.length + ' 冊から出題';
-  } else {
-    el.textContent = quizScore.correct + ' / ' + quizScore.total + ' 正解';
-  }
-}
-
 function generateQuestion() {
   const idx = Math.floor(Math.random() * books.length);
   const book = books[idx];
@@ -176,7 +186,6 @@ function generateQuestion() {
       answer: book.author,
     };
   }
-
   if (type === 'title') {
     return {
       before: '',
@@ -184,7 +193,6 @@ function generateQuestion() {
       answer: book.title,
     };
   }
-
   if (type === 'year') {
     return {
       before: '「' + book.title + '」（' + book.author + '）が出版されたのは',
@@ -192,7 +200,6 @@ function generateQuestion() {
       answer: String(book.year),
     };
   }
-
   // keyword
   const point = book.points[Math.floor(Math.random() * book.points.length)];
   const sep = point.indexOf('—');
@@ -222,48 +229,23 @@ function nextQuestion() {
   }
   const blank = document.createElement('span');
   blank.className = 'quiz-blank';
+  blank.id = 'quiz-blank';
   blank.textContent = '　　　　';
   questionEl.appendChild(blank);
   if (currentQuestion.after) {
     questionEl.appendChild(document.createTextNode(currentQuestion.after));
   }
 
-  const input = document.getElementById('quiz-input');
-  input.value = '';
-  input.disabled = false;
-  input.onkeydown = function(e) { if (e.key === 'Enter') submitAnswer(); };
-
-  document.getElementById('quiz-feedback').style.display = 'none';
+  document.getElementById('quiz-reveal').style.display = '';
   document.getElementById('quiz-next').style.display = 'none';
-  document.getElementById('quiz-submit').style.display = '';
-
-  setTimeout(function() { input.focus(); }, 50);
 }
 
-function normalize(s) {
-  return s.trim().replace(/[・\s]/g, '').toLowerCase();
-}
+function revealAnswer() {
+  const blank = document.getElementById('quiz-blank');
+  blank.textContent = currentQuestion.answer;
+  blank.classList.add('quiz-blank-revealed');
 
-function submitAnswer() {
-  const input = document.getElementById('quiz-input');
-  const userRaw = input.value.trim().replace(/年$/, '');
-  const correctRaw = currentQuestion.answer.replace(/年$/, '');
-  const isCorrect = normalize(userRaw) === normalize(correctRaw);
-
-  quizScore.total++;
-  if (isCorrect) quizScore.correct++;
-  updateQuizScore();
-
-  input.disabled = true;
-  document.getElementById('quiz-submit').style.display = 'none';
-
-  const feedback = document.getElementById('quiz-feedback');
-  feedback.className = 'quiz-feedback ' + (isCorrect ? 'correct' : 'incorrect');
-  feedback.textContent = isCorrect
-    ? '✓ 正解！　' + currentQuestion.answer
-    : '✗ 不正解。正解は「' + currentQuestion.answer + '」';
-  feedback.style.display = '';
-
+  document.getElementById('quiz-reveal').style.display = 'none';
   document.getElementById('quiz-next').style.display = '';
 }
 

@@ -23,7 +23,10 @@
       <div class="card" id="book-card">
         <div class="card-header">
           <span class="category" id="book-category"></span>
-          <span class="year" id="book-year"></span>
+          <div class="card-meta">
+            <span class="book-number" id="book-number"></span>
+            <span class="year" id="book-year"></span>
+          </div>
         </div>
         <h2 class="book-title" id="book-title"></h2>
         <p class="book-author" id="book-author"></p>
@@ -36,6 +39,10 @@
         <p class="takeaway" id="book-takeaway"></p>
       </div>
       <div class="controls">
+        <div class="nav-row">
+          <button class="btn btn-nav" id="btn-prev" onclick="goPrev()" disabled>◀ 前へ</button>
+          <button class="btn btn-nav" id="btn-next" onclick="goNext()" style="display:none">次へ ▶</button>
+        </div>
         <button class="btn btn-primary" onclick="showRandom()">ランダムで表示</button>
         <p class="counter" id="counter"></p>
       </div>
@@ -49,17 +56,10 @@
 
     <!-- クイズモード -->
     <div id="mode-quiz" style="display:none">
-      <div class="quiz-header">
-        <span class="quiz-score" id="quiz-score"></span>
-      </div>
       <div class="card">
         <p class="quiz-question" id="quiz-question"></p>
-        <div class="quiz-input-area">
-          <input type="text" id="quiz-input" class="quiz-input" placeholder="答えを入力…" autocomplete="off" />
-          <button class="btn btn-primary" id="quiz-submit" onclick="submitAnswer()">確認</button>
-        </div>
-        <div class="quiz-feedback" id="quiz-feedback" style="display:none"></div>
-        <button class="btn btn-primary quiz-next" id="quiz-next" style="display:none" onclick="nextQuestion()">次の問題へ</button>
+        <button class="btn btn-primary" id="quiz-reveal" onclick="revealAnswer()">解答を見る</button>
+        <button class="btn btn-nav quiz-next" id="quiz-next" style="display:none" onclick="nextQuestion()">次の問題へ</button>
       </div>
     </div>
   </div>
