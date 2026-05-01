@@ -70,7 +70,6 @@ function goNext() {
 // ---- 一覧モード ----
 
 function renderList() {
-  document.getElementById('list-counter').textContent = '全 ' + books.length + ' 冊収録';
   const container = document.getElementById('book-list');
   container.innerHTML = '';
   books.forEach(function(book, index) {
@@ -249,6 +248,6 @@ function revealAnswer() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('header-count').textContent = books.length + '冊';
+  document.getElementById('header-count').textContent = '全' + books.length + '冊収録';
   showRandom();
 });
