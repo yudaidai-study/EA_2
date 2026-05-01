@@ -38,7 +38,7 @@ function displayBook(idx) {
     pointsList.appendChild(li);
   });
 
-  document.getElementById('btn-prev').disabled = (histPos === 0);
+  document.getElementById('btn-prev').style.visibility = (histPos > 0) ? 'visible' : 'hidden';
   document.getElementById('btn-next').style.visibility = (histPos < viewHistory.length - 1) ? 'visible' : 'hidden';
 }
 
