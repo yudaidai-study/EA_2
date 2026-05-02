@@ -38,8 +38,10 @@ function displayBook(idx) {
     pointsList.appendChild(li);
   });
 
-  document.getElementById('btn-prev').style.visibility = (histPos > 0) ? 'visible' : 'hidden';
-  document.getElementById('btn-next').style.visibility = (histPos < viewHistory.length - 1) ? 'visible' : 'hidden';
+  const prevVis = (histPos > 0) ? 'visible' : 'hidden';
+  const nextVis = (histPos < viewHistory.length - 1) ? 'visible' : 'hidden';
+  ['btn-prev', 'btn-prev-top'].forEach(function(id) { document.getElementById(id).style.visibility = prevVis; });
+  ['btn-next', 'btn-next-top'].forEach(function(id) { document.getElementById(id).style.visibility = nextVis; });
 }
 
 function showRandom() {
