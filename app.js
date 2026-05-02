@@ -144,6 +144,9 @@ function renderList() {
     const info = document.createElement('div');
     info.className = 'list-item-info';
 
+    const meta = document.createElement('div');
+    meta.className = 'list-item-meta';
+
     const num = document.createElement('span');
     num.className = 'list-item-num';
     num.textContent = 'No.' + (index + 1);
@@ -165,8 +168,9 @@ function renderList() {
     arrow.id = 'arrow-' + index;
     arrow.textContent = '▸';
 
-    info.appendChild(num);
-    info.appendChild(cat);
+    meta.appendChild(num);
+    meta.appendChild(cat);
+    info.appendChild(meta);
     info.appendChild(title);
     info.appendChild(author);
     header.appendChild(info);
