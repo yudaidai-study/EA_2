@@ -174,7 +174,7 @@ function toggleListItem(index) {
 function generateQuestion() {
   const idx = Math.floor(Math.random() * books.length);
   const book = books[idx];
-  const types = ['author', 'title', 'keyword', 'year'];
+  const types = ['author', 'title', 'keyword'];
   const type = types[Math.floor(Math.random() * types.length)];
 
   if (type === 'author') {
@@ -187,15 +187,8 @@ function generateQuestion() {
   if (type === 'title') {
     return {
       before: '',
-      after: 'は' + book.author + 'の著作（' + book.year + '年刊、' + book.category + '）だ。',
+      after: 'は' + book.author + 'の著作（' + book.category + '）だ。',
       answer: book.title,
-    };
-  }
-  if (type === 'year') {
-    return {
-      before: '「' + book.title + '」（' + book.author + '）が出版されたのは',
-      after: '年だ。',
-      answer: String(book.year),
     };
   }
   // keyword
