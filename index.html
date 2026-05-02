@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>書籍要約</title>
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <div class="container">
@@ -23,6 +23,13 @@
 
     <!-- ランダムモード -->
     <div id="mode-random">
+      <div class="controls">
+        <div class="random-row">
+          <button class="btn btn-nav" id="btn-prev-top" onclick="goPrev()" style="visibility:hidden">◀ 前へ</button>
+          <button class="btn btn-primary" onclick="showRandom()">ランダムで表示</button>
+          <button class="btn btn-nav" id="btn-next-top" onclick="goNext()" style="visibility:hidden">次へ ▶</button>
+        </div>
+      </div>
       <div class="card" id="book-card">
         <div class="card-header">
           <span class="category" id="book-category"></span>
@@ -66,6 +73,6 @@
   </div>
 
   <script src="books.js?v=1"></script>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
