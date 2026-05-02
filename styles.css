@@ -323,6 +323,14 @@ header h1 {
   min-width: 0;
 }
 
+.list-item-info .category {
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  font-size: 0.72rem;
+  color: #667eea;
+}
+
 .list-item-title {
   font-size: 1rem;
   font-weight: 700;
