@@ -1,6 +1,36 @@
 let viewHistory = [];
 let histPos = -1;
 let currentQuestion = null;
+let selectedCategory = 'all';
+
+function getFilteredBooks() {
+  if (selectedCategory === 'all') return books;
+  return books.filter(function(b) { return b.category === selectedCategory; });
+}
+
+function selectCategory(cat) {
+  selectedCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+  viewHistory = [];
+  histPos = -1;
+  updateHeaderCount();
+  const mode = document.querySelector('.tab-btn.active').id.replace('tab-', '');
+  if (mode === 'random') showRandom();
+  else if (mode === 'list') renderList();
+  else if (mode === 'quiz') nextQuestion();
+}
+
+function updateHeaderCount() {
+  const filtered = getFilteredBooks();
+  const el = document.getElementById('header-count');
+  if (selectedCategory === 'all') {
+    el.textContent = '全' + books.length + '冊収録';
+  } else {
+    el.textContent = selectedCategory + ' ' + filtered.length + '冊';
+  }
+}
 
 // ---- モード切替 ----
 
@@ -45,14 +75,34 @@ function displayBook(idx) {
 }
 
 function showRandom() {
-  // 前進履歴を切り捨ててから新しい書籍を追加
+  const filtered = getFilteredBooks();
+  if (filtered.length === 0) {
+    const card = document.getElementById('book-card');
+    card.classList.remove('fade-in');
+    void card.offsetWidth;
+    card.classList.add('fade-in');
+    document.getElementById('book-number').textContent = '';
+    document.getElementById('book-title').textContent = '書籍がありません';
+    document.getElementById('book-author').textContent = '';
+    document.getElementById('book-year').textContent = '';
+    document.getElementById('book-category').textContent = selectedCategory;
+    document.getElementById('book-summary').textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
+    document.getElementById('book-points').innerHTML = '';
+    document.getElementById('book-takeaway').textContent = '';
+    ['btn-prev', 'btn-prev-top', 'btn-next', 'btn-next-top'].forEach(function(id) {
+      document.getElementById(id).style.visibility = 'hidden';
+    });
+    return;
+  }
   viewHistory = viewHistory.slice(0, histPos + 1);
-  const last = viewHistory.length > 0 ? viewHistory[viewHistory.length - 1] : -1;
-  let next;
-  do { next = Math.floor(Math.random() * books.length); } while (next === last && books.length > 1);
-  viewHistory.push(next);
+  const lastIdx = viewHistory.length > 0 ? viewHistory[viewHistory.length - 1] : -1;
+  let bookIdx;
+  do {
+    bookIdx = books.indexOf(filtered[Math.floor(Math.random() * filtered.length)]);
+  } while (bookIdx === lastIdx && filtered.length > 1);
+  viewHistory.push(bookIdx);
   histPos = viewHistory.length - 1;
-  displayBook(next);
+  displayBook(bookIdx);
 }
 
 function goPrev() {
@@ -72,9 +122,18 @@ function goNext() {
 // ---- 一覧モード ----
 
 function renderList() {
+  const filtered = getFilteredBooks();
   const container = document.getElementById('book-list');
   container.innerHTML = '';
-  books.forEach(function(book, index) {
+  if (filtered.length === 0) {
+    const msg = document.createElement('p');
+    msg.className = 'list-empty';
+    msg.textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
+    container.appendChild(msg);
+    return;
+  }
+  filtered.forEach(function(book) {
+    const index = books.indexOf(book);
     const item = document.createElement('div');
     item.className = 'list-item';
 
@@ -174,8 +233,9 @@ function toggleListItem(index) {
 // ---- クイズモード ----
 
 function generateQuestion() {
-  const idx = Math.floor(Math.random() * books.length);
-  const book = books[idx];
+  const filtered = getFilteredBooks();
+  if (filtered.length === 0) return null;
+  const book = filtered[Math.floor(Math.random() * filtered.length)];
   const types = ['author', 'title', 'keyword'];
   const type = types[Math.floor(Math.random() * types.length)];
 
@@ -215,6 +275,14 @@ function generateQuestion() {
 function nextQuestion() {
   currentQuestion = generateQuestion();
 
+  if (!currentQuestion) {
+    const questionEl = document.getElementById('quiz-question');
+    questionEl.textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
+    document.getElementById('quiz-reveal').style.display = 'none';
+    document.getElementById('quiz-next').style.display = 'none';
+    return;
+  }
+
   const questionEl = document.getElementById('quiz-question');
   questionEl.innerHTML = '';
   if (currentQuestion.before) {
@@ -243,6 +311,6 @@ function revealAnswer() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('header-count').textContent = '全' + books.length + '冊収録';
+  updateHeaderCount();
   showRandom();
 });

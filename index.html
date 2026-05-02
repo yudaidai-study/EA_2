@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>書籍要約</title>
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
   <div class="container">
@@ -19,6 +19,14 @@
       <button class="tab-btn active" id="tab-random" onclick="switchMode('random')">ランダム</button>
       <button class="tab-btn" id="tab-list" onclick="switchMode('list')">一覧</button>
       <button class="tab-btn" id="tab-quiz" onclick="switchMode('quiz')">クイズ</button>
+    </div>
+
+    <div class="category-tabs">
+      <button class="cat-btn active" data-cat="all" onclick="selectCategory('all')">すべて</button>
+      <button class="cat-btn" data-cat="経営" onclick="selectCategory('経営')">経営</button>
+      <button class="cat-btn" data-cat="経済" onclick="selectCategory('経済')">経済</button>
+      <button class="cat-btn" data-cat="IT" onclick="selectCategory('IT')">IT</button>
+      <button class="cat-btn" data-cat="お金" onclick="selectCategory('お金')">お金</button>
     </div>
 
     <!-- ランダムモード -->
@@ -72,7 +80,7 @@
     </div>
   </div>
 
-  <script src="books.js?v=1"></script>
-  <script src="app.js?v=5"></script>
+  <script src="books.js?v=2"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
