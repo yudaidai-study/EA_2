@@ -262,6 +262,12 @@ header h1 {
 }
 
 /* Navigation buttons (random mode) */
+#mode-random {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .random-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
