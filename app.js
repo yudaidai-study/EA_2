@@ -1,5 +1,7 @@
 let viewHistory = [];
 let histPos = -1;
+let quizHistory = [];
+let quizHistPos = -1;
 let currentQuestion = null;
 let selectedCategory = 'all';
 
@@ -15,6 +17,8 @@ function selectCategory(cat) {
   });
   viewHistory = [];
   histPos = -1;
+  quizHistory = [];
+  quizHistPos = -1;
   updateHeaderCount();
   const mode = document.querySelector('.tab-btn.active').id.replace('tab-', '');
   if (mode === 'random') showRandom();
@@ -39,6 +43,11 @@ function switchMode(mode) {
     document.getElementById('mode-' + m).style.display = (m === mode) ? '' : 'none';
     document.getElementById('tab-' + m).classList.toggle('active', m === mode);
   });
+  const footer = document.getElementById('fixed-footer');
+  footer.style.display = (mode === 'list') ? 'none' : '';
+  document.getElementById('footer-random').style.display = (mode === 'random') ? '' : 'none';
+  document.getElementById('footer-quiz').style.display = (mode === 'quiz') ? '' : 'none';
+  document.body.style.paddingBottom = (mode === 'list') ? '24px' : '';
   if (mode === 'list') renderList();
   if (mode === 'quiz') nextQuestion();
 }
@@ -255,7 +264,6 @@ function generateQuestion() {
       answer: book.title,
     };
   }
-  // keyword
   const point = book.points[Math.floor(Math.random() * book.points.length)];
   const sep = point.indexOf('—');
   if (sep === -1) {
@@ -274,17 +282,15 @@ function generateQuestion() {
   };
 }
 
-function nextQuestion() {
-  currentQuestion = generateQuestion();
-
+function displayQuizQuestion(q) {
+  currentQuestion = q;
   if (!currentQuestion) {
-    const questionEl = document.getElementById('quiz-question');
-    questionEl.textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
+    document.getElementById('quiz-question').textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
     document.getElementById('quiz-reveal').style.display = 'none';
-    document.getElementById('quiz-next').style.display = 'none';
+    document.getElementById('quiz-btn-prev').disabled = true;
+    document.getElementById('quiz-btn-next').disabled = true;
     return;
   }
-
   const questionEl = document.getElementById('quiz-question');
   questionEl.innerHTML = '';
   if (currentQuestion.before) {
@@ -298,18 +304,40 @@ function nextQuestion() {
   if (currentQuestion.after) {
     questionEl.appendChild(document.createTextNode(currentQuestion.after));
   }
-
   document.getElementById('quiz-reveal').style.display = '';
-  document.getElementById('quiz-next').style.display = 'none';
+  document.getElementById('quiz-btn-prev').disabled = (quizHistPos <= 0);
+  document.getElementById('quiz-btn-next').disabled = (quizHistPos >= quizHistory.length - 1);
+}
+
+function nextQuestion() {
+  quizHistory = quizHistory.slice(0, quizHistPos + 1);
+  const q = generateQuestion();
+  if (q) {
+    quizHistory.push(q);
+    quizHistPos = quizHistory.length - 1;
+  }
+  displayQuizQuestion(q);
+}
+
+function quizGoPrev() {
+  if (quizHistPos > 0) {
+    quizHistPos--;
+    displayQuizQuestion(quizHistory[quizHistPos]);
+  }
+}
+
+function quizGoNext() {
+  if (quizHistPos < quizHistory.length - 1) {
+    quizHistPos++;
+    displayQuizQuestion(quizHistory[quizHistPos]);
+  }
 }
 
 function revealAnswer() {
   const blank = document.getElementById('quiz-blank');
   blank.textContent = currentQuestion.answer;
   blank.classList.add('quiz-blank-revealed');
-
   document.getElementById('quiz-reveal').style.display = 'none';
-  document.getElementById('quiz-next').style.display = '';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
