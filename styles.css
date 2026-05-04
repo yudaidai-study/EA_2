@@ -311,6 +311,16 @@ header h1 {
   color: #e0e0e0;
 }
 
+.btn-nav:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.fixed-footer .btn-primary {
+  padding: 12px 40px;
+  font-size: 1rem;
+}
+
 
 /* Category tabs */
 .category-tabs {
