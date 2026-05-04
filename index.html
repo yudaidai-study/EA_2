@@ -64,16 +64,20 @@
       <div class="card">
         <p class="quiz-question" id="quiz-question"></p>
         <button class="btn btn-primary" id="quiz-reveal" onclick="revealAnswer()">解答を見る</button>
-        <button class="btn btn-nav quiz-next" id="quiz-next" style="display:none" onclick="nextQuestion()">次の問題へ</button>
       </div>
     </div>
   </div>
 
-  <div class="fixed-footer">
-    <div class="random-row">
+  <div class="fixed-footer" id="fixed-footer">
+    <div id="footer-random" class="random-row">
       <button class="btn btn-nav" id="btn-prev" onclick="goPrev()" disabled>◀ 前へ</button>
-      <button class="btn btn-primary" onclick="showRandom()">次の書籍</button>
+      <button class="btn btn-primary" onclick="showRandom()">ランダム表示</button>
       <button class="btn btn-nav" id="btn-next" onclick="goNext()" disabled>次へ ▶</button>
+    </div>
+    <div id="footer-quiz" class="random-row" style="display:none">
+      <button class="btn btn-nav" id="quiz-btn-prev" onclick="quizGoPrev()" disabled>戻る</button>
+      <button class="btn btn-primary" onclick="nextQuestion()">次の問題</button>
+      <button class="btn btn-nav" id="quiz-btn-next" onclick="quizGoNext()" disabled>進む</button>
     </div>
     <p class="counter" id="counter"></p>
   </div>
