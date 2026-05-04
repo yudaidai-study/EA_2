@@ -73,6 +73,7 @@ function displayBook(idx) {
 }
 
 function showRandom() {
+  window.scrollTo(0, 0);
   const filtered = getFilteredBooks();
   if (filtered.length === 0) {
     const card = document.getElementById('book-card');
