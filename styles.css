@@ -283,14 +283,10 @@ header h1 {
 
 .random-row {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 80px 1fr 80px;
   gap: 10px;
   width: 100%;
-  align-items: center;
-}
-
-.random-row #btn-next {
-  justify-self: end;
+  align-items: stretch;
 }
 
 .btn-nav {
@@ -316,9 +312,22 @@ header h1 {
   cursor: default;
 }
 
+.fixed-footer .btn-nav,
 .fixed-footer .btn-primary {
-  padding: 12px 40px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fixed-footer .btn-nav {
+  width: 100%;
+  padding: 0 8px;
+}
+
+.fixed-footer .btn-primary {
   font-size: 1rem;
+  padding: 0 20px;
 }
 
 
