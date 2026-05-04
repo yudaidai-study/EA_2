@@ -1,4 +1,4 @@
-const CACHE = 'shoseki-v4';
+const CACHE = 'shoseki-v5';
 const ASSETS = [
   '/EA_2/',
   '/EA_2/index.html',
