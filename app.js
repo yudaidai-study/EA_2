@@ -68,10 +68,8 @@ function displayBook(idx) {
     pointsList.appendChild(li);
   });
 
-  const prevVis = (histPos > 0) ? 'visible' : 'hidden';
-  const nextVis = (histPos < viewHistory.length - 1) ? 'visible' : 'hidden';
-  ['btn-prev', 'btn-prev-top'].forEach(function(id) { document.getElementById(id).style.visibility = prevVis; });
-  ['btn-next', 'btn-next-top'].forEach(function(id) { document.getElementById(id).style.visibility = nextVis; });
+  document.getElementById('btn-prev').disabled = (histPos <= 0);
+  document.getElementById('btn-next').disabled = (histPos >= viewHistory.length - 1);
 }
 
 function showRandom() {
@@ -89,9 +87,8 @@ function showRandom() {
     document.getElementById('book-summary').textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
     document.getElementById('book-points').innerHTML = '';
     document.getElementById('book-takeaway').textContent = '';
-    ['btn-prev', 'btn-prev-top', 'btn-next', 'btn-next-top'].forEach(function(id) {
-      document.getElementById(id).style.visibility = 'hidden';
-    });
+    document.getElementById('btn-prev').disabled = true;
+    document.getElementById('btn-next').disabled = true;
     return;
   }
   viewHistory = viewHistory.slice(0, histPos + 1);
