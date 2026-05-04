@@ -1,45 +1,320 @@
-let currentIndex = -1;
-let viewedCount = 0;
+let viewHistory = [];
+let histPos = -1;
+let currentQuestion = null;
+let selectedCategory = 'all';
 
-function getRandomIndex() {
-  if (books.length === 1) return 0;
-  let next;
-  do {
-    next = Math.floor(Math.random() * books.length);
-  } while (next === currentIndex);
-  return next;
+function getFilteredBooks() {
+  if (selectedCategory === 'all') return books;
+  return books.filter(function(b) { return b.category === selectedCategory; });
 }
 
-function showRandom() {
-  currentIndex = getRandomIndex();
-  viewedCount++;
+function selectCategory(cat) {
+  selectedCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+  viewHistory = [];
+  histPos = -1;
+  updateHeaderCount();
+  const mode = document.querySelector('.tab-btn.active').id.replace('tab-', '');
+  if (mode === 'random') showRandom();
+  else if (mode === 'list') renderList();
+  else if (mode === 'quiz') nextQuestion();
+}
 
-  const book = books[currentIndex];
-  const card = document.getElementById("book-card");
+function updateHeaderCount() {
+  const filtered = getFilteredBooks();
+  const el = document.getElementById('header-count');
+  if (selectedCategory === 'all') {
+    el.textContent = '全' + books.length + '冊収録';
+  } else {
+    el.textContent = selectedCategory + ' ' + filtered.length + '冊';
+  }
+}
 
-  card.classList.remove("fade-in");
+// ---- モード切替 ----
+
+function switchMode(mode) {
+  ['random', 'list', 'quiz'].forEach(function(m) {
+    document.getElementById('mode-' + m).style.display = (m === mode) ? '' : 'none';
+    document.getElementById('tab-' + m).classList.toggle('active', m === mode);
+  });
+  if (mode === 'list') renderList();
+  if (mode === 'quiz') nextQuestion();
+}
+
+// ---- ランダムモード ----
+
+function displayBook(idx) {
+  const book = books[idx];
+  const card = document.getElementById('book-card');
+  card.classList.remove('fade-in');
   void card.offsetWidth;
-  card.classList.add("fade-in");
+  card.classList.add('fade-in');
 
-  document.getElementById("book-title").textContent = book.title;
-  document.getElementById("book-author").textContent = `著者: ${book.author}`;
-  document.getElementById("book-year").textContent = `${book.year}年`;
-  document.getElementById("book-category").textContent = book.category;
-  document.getElementById("book-summary").textContent = book.summary;
-  document.getElementById("book-takeaway").textContent = book.takeaway;
+  document.getElementById('book-number').textContent = 'No.' + (idx + 1);
+  document.getElementById('book-title').textContent = book.title;
+  document.getElementById('book-author').textContent = '著者: ' + book.author;
+  document.getElementById('book-year').textContent = book.year + '年';
+  document.getElementById('book-category').textContent = book.category;
+  document.getElementById('book-summary').textContent = book.summary;
+  document.getElementById('book-takeaway').textContent = book.takeaway;
 
-  const pointsList = document.getElementById("book-points");
-  pointsList.innerHTML = "";
-  book.points.forEach((point) => {
-    const li = document.createElement("li");
+  const pointsList = document.getElementById('book-points');
+  pointsList.innerHTML = '';
+  book.points.forEach(function(point) {
+    const li = document.createElement('li');
     li.textContent = point;
     pointsList.appendChild(li);
   });
 
-  document.getElementById("counter").textContent =
-    `これまでに ${viewedCount} 冊表示しました（全 ${books.length} 冊）`;
+  const prevVis = (histPos > 0) ? 'visible' : 'hidden';
+  const nextVis = (histPos < viewHistory.length - 1) ? 'visible' : 'hidden';
+  ['btn-prev', 'btn-prev-top'].forEach(function(id) { document.getElementById(id).style.visibility = prevVis; });
+  ['btn-next', 'btn-next-top'].forEach(function(id) { document.getElementById(id).style.visibility = nextVis; });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function showRandom() {
+  const filtered = getFilteredBooks();
+  if (filtered.length === 0) {
+    const card = document.getElementById('book-card');
+    card.classList.remove('fade-in');
+    void card.offsetWidth;
+    card.classList.add('fade-in');
+    document.getElementById('book-number').textContent = '';
+    document.getElementById('book-title').textContent = '書籍がありません';
+    document.getElementById('book-author').textContent = '';
+    document.getElementById('book-year').textContent = '';
+    document.getElementById('book-category').textContent = selectedCategory;
+    document.getElementById('book-summary').textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
+    document.getElementById('book-points').innerHTML = '';
+    document.getElementById('book-takeaway').textContent = '';
+    ['btn-prev', 'btn-prev-top', 'btn-next', 'btn-next-top'].forEach(function(id) {
+      document.getElementById(id).style.visibility = 'hidden';
+    });
+    return;
+  }
+  viewHistory = viewHistory.slice(0, histPos + 1);
+  const lastIdx = viewHistory.length > 0 ? viewHistory[viewHistory.length - 1] : -1;
+  let bookIdx;
+  do {
+    bookIdx = books.indexOf(filtered[Math.floor(Math.random() * filtered.length)]);
+  } while (bookIdx === lastIdx && filtered.length > 1);
+  viewHistory.push(bookIdx);
+  histPos = viewHistory.length - 1;
+  displayBook(bookIdx);
+}
+
+function goPrev() {
+  if (histPos > 0) {
+    histPos--;
+    displayBook(viewHistory[histPos]);
+  }
+}
+
+function goNext() {
+  if (histPos < viewHistory.length - 1) {
+    histPos++;
+    displayBook(viewHistory[histPos]);
+  }
+}
+
+// ---- 一覧モード ----
+
+function renderList() {
+  const filtered = getFilteredBooks();
+  const container = document.getElementById('book-list');
+  container.innerHTML = '';
+  if (filtered.length === 0) {
+    const msg = document.createElement('p');
+    msg.className = 'list-empty';
+    msg.textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
+    container.appendChild(msg);
+    return;
+  }
+  filtered.forEach(function(book) {
+    const index = books.indexOf(book);
+    const item = document.createElement('div');
+    item.className = 'list-item';
+
+    const header = document.createElement('div');
+    header.className = 'list-item-header';
+    header.onclick = function() { toggleListItem(index); };
+
+    const info = document.createElement('div');
+    info.className = 'list-item-info';
+
+    const meta = document.createElement('div');
+    meta.className = 'list-item-meta';
+
+    const num = document.createElement('span');
+    num.className = 'list-item-num';
+    num.textContent = 'No.' + (index + 1);
+
+    const cat = document.createElement('span');
+    cat.className = 'category';
+    cat.textContent = book.category;
+
+    const title = document.createElement('span');
+    title.className = 'list-item-title';
+    title.textContent = book.title;
+
+    const author = document.createElement('span');
+    author.className = 'list-item-author';
+    author.textContent = book.author + '（' + book.year + '年）';
+
+    const arrow = document.createElement('span');
+    arrow.className = 'list-item-arrow';
+    arrow.id = 'arrow-' + index;
+    arrow.textContent = '▸';
+
+    meta.appendChild(num);
+    meta.appendChild(cat);
+    info.appendChild(meta);
+    info.appendChild(title);
+    info.appendChild(author);
+    header.appendChild(info);
+    header.appendChild(arrow);
+
+    const detail = document.createElement('div');
+    detail.className = 'list-item-detail';
+    detail.id = 'detail-' + index;
+    detail.style.display = 'none';
+
+    const divider = document.createElement('div');
+    divider.className = 'divider';
+
+    const summaryLabel = document.createElement('h3');
+    summaryLabel.className = 'section-label';
+    summaryLabel.textContent = '概要';
+
+    const summaryText = document.createElement('p');
+    summaryText.className = 'summary';
+    summaryText.textContent = book.summary;
+
+    const pointsLabel = document.createElement('h3');
+    pointsLabel.className = 'section-label';
+    pointsLabel.textContent = '主なポイント';
+
+    const pointsList = document.createElement('ul');
+    pointsList.className = 'points';
+    book.points.forEach(function(p) {
+      const li = document.createElement('li');
+      li.textContent = p;
+      pointsList.appendChild(li);
+    });
+
+    const takeawayLabel = document.createElement('h3');
+    takeawayLabel.className = 'section-label';
+    takeawayLabel.textContent = 'この本から学べること';
+
+    const takeawayText = document.createElement('p');
+    takeawayText.className = 'takeaway';
+    takeawayText.textContent = book.takeaway;
+
+    detail.appendChild(divider);
+    detail.appendChild(summaryLabel);
+    detail.appendChild(summaryText);
+    detail.appendChild(pointsLabel);
+    detail.appendChild(pointsList);
+    detail.appendChild(takeawayLabel);
+    detail.appendChild(takeawayText);
+
+    item.appendChild(header);
+    item.appendChild(detail);
+    container.appendChild(item);
+  });
+}
+
+function toggleListItem(index) {
+  const detail = document.getElementById('detail-' + index);
+  const arrow = document.getElementById('arrow-' + index);
+  const opening = detail.style.display === 'none';
+  detail.style.display = opening ? '' : 'none';
+  arrow.textContent = opening ? '▾' : '▸';
+}
+
+// ---- クイズモード ----
+
+function generateQuestion() {
+  const filtered = getFilteredBooks();
+  if (filtered.length === 0) return null;
+  const book = filtered[Math.floor(Math.random() * filtered.length)];
+  const types = ['author', 'title', 'keyword'];
+  const type = types[Math.floor(Math.random() * types.length)];
+
+  if (type === 'author') {
+    return {
+      before: '「' + book.title + '」の著者は',
+      after: 'だ。',
+      answer: book.author,
+    };
+  }
+  if (type === 'title') {
+    return {
+      before: '',
+      after: 'は' + book.author + 'の著作（' + book.category + '）だ。',
+      answer: book.title,
+    };
+  }
+  // keyword
+  const point = book.points[Math.floor(Math.random() * book.points.length)];
+  const sep = point.indexOf('—');
+  if (sep === -1) {
+    return {
+      before: '「' + book.title + '」の著者は',
+      after: 'だ。',
+      answer: book.author,
+    };
+  }
+  const keyword = point.slice(0, sep).trim();
+  const desc = point.slice(sep + 1).trim();
+  return {
+    before: '「' + book.title + '」のキーワード：',
+    after: 'とは、' + desc,
+    answer: keyword,
+  };
+}
+
+function nextQuestion() {
+  currentQuestion = generateQuestion();
+
+  if (!currentQuestion) {
+    const questionEl = document.getElementById('quiz-question');
+    questionEl.textContent = 'このカテゴリの書籍は現在登録されていません。今後追加予定です。';
+    document.getElementById('quiz-reveal').style.display = 'none';
+    document.getElementById('quiz-next').style.display = 'none';
+    return;
+  }
+
+  const questionEl = document.getElementById('quiz-question');
+  questionEl.innerHTML = '';
+  if (currentQuestion.before) {
+    questionEl.appendChild(document.createTextNode(currentQuestion.before));
+  }
+  const blank = document.createElement('span');
+  blank.className = 'quiz-blank';
+  blank.id = 'quiz-blank';
+  blank.textContent = '　　　　';
+  questionEl.appendChild(blank);
+  if (currentQuestion.after) {
+    questionEl.appendChild(document.createTextNode(currentQuestion.after));
+  }
+
+  document.getElementById('quiz-reveal').style.display = '';
+  document.getElementById('quiz-next').style.display = 'none';
+}
+
+function revealAnswer() {
+  const blank = document.getElementById('quiz-blank');
+  blank.textContent = currentQuestion.answer;
+  blank.classList.add('quiz-blank-revealed');
+
+  document.getElementById('quiz-reveal').style.display = 'none';
+  document.getElementById('quiz-next').style.display = '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  updateHeaderCount();
   showRandom();
 });
