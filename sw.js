@@ -1,4 +1,4 @@
-const CACHE = 'shoseki-v6';
+const CACHE = 'shoseki-v7';
 const ASSETS = [
   '/02_BookSummary/',
   '/02_BookSummary/index.html',
@@ -24,8 +24,21 @@ self.addEventListener('activate', e => {
   );
 });
 
+// stale-while-revalidate: キャッシュを即返しつつ裏でネットワーク取得してキャッシュ更新
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  const isAppAsset = ASSETS.some(a => url.pathname === a || url.pathname.startsWith(a));
+  if (!isAppAsset) return;
+
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
+    caches.open(CACHE).then(cache =>
+      cache.match(e.request).then(cached => {
+        const fresh = fetch(e.request).then(res => {
+          if (res.ok) cache.put(e.request, res.clone());
+          return res;
+        }).catch(() => null);
+        return cached || fresh;
+      })
+    )
   );
 });

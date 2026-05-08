@@ -86,7 +86,13 @@
   <script src="app.js?v=7"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/EA_2/sw.js');
+      navigator.serviceWorker.register('/02_BookSummary/sw.js').then(reg => {
+        // 新しいSWがactivateしたらページをリロードしてコードを最新化
+        // localStorage/IndexedDBのユーザーデータはリロードで消えない
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
+      });
     }
   </script>
 </body>
