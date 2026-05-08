@@ -2,7 +2,7 @@
   "name": "書籍要約",
   "short_name": "書籍要約",
   "description": "ビジネス書・教養書137冊の要約アプリ",
-  "start_url": "/EA_2/",
+  "start_url": "/02_BookSummary/",
   "display": "standalone",
   "background_color": "#f5f5f0",
   "theme_color": "#2c3e50",

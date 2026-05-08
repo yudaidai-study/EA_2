@@ -1,13 +1,13 @@
-const CACHE = 'shoseki-v5';
+const CACHE = 'shoseki-v6';
 const ASSETS = [
-  '/EA_2/',
-  '/EA_2/index.html',
-  '/EA_2/styles.css',
-  '/EA_2/app.js',
-  '/EA_2/books.js',
-  '/EA_2/manifest.json',
-  '/EA_2/icons/icon-192.png',
-  '/EA_2/icons/icon-512.png',
+  '/02_BookSummary/',
+  '/02_BookSummary/index.html',
+  '/02_BookSummary/styles.css',
+  '/02_BookSummary/app.js',
+  '/02_BookSummary/books.js',
+  '/02_BookSummary/manifest.json',
+  '/02_BookSummary/icons/icon-192.png',
+  '/02_BookSummary/icons/icon-512.png',
 ];
 
 self.addEventListener('install', e => {
